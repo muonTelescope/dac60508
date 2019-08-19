@@ -92,7 +92,7 @@ class DAC60508 {
     float readmVDAC(uint8_t channel);
     uint16_t setmVDAC(uint8_t channel, uint16_t value);
     bool setGain(uint8_t channel, uint8_t value);
-    uint16_t readDAC();
+    uint16_t readDAC(uint8_t channel);
     bool setDAC(uint8_t channel, uint16_t value);
 
   private:

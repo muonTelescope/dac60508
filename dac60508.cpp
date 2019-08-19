@@ -14,7 +14,7 @@ DAC60508::DAC60508() {
 }
 
 // Setup Channel, mode, and chip select
-bool DAC60508:begin(uint8_t CS_PIN, uint8_t SPI_CHANNEL){
+bool DAC60508::begin(uint8_t CS_PIN, uint8_t SPI_CHANNEL){
   _SPI_CHANNEL = SPI_CHANNEL;
   _CS_PIN = CS_PIN;
   wiringPiSetup () ;
@@ -27,25 +27,26 @@ bool DAC60508:begin(uint8_t CS_PIN, uint8_t SPI_CHANNEL){
 }
 
 // Read DAC channel in milivolts
-float DAC60508::readmVDAC(channel){
+float DAC60508::readmVDAC(uint8_t channel){
   float val;
   // Convert from bits to voltage
   val = refV * (readDAC(channel) / 1<<16);
   // Apply refrence dividor
   if(refDiv){
-    val =* 0.5;
+    val *= 0.5;
   }
   // Apply buffer gain
   if(buffGain[channel]){
-    val *=2;
+    val *= 2;
   }
   return val;
 }
 
-bool setGain(uint8_t channel, uint8_t value){
-  if(channel >= 0 && channel < 8){
-  writeBit(DAC60508_GAIN, channel);
-}
+// bool setGain(uint8_t channel, uint8_t value){
+//   if(channel >= 0 && channel < 8){
+//     writeBit(DAC60508_GAIN, channel);
+//   }
+// }
 
 // Write DAC value for channel in bits
 bool DAC60508::setDAC(uint8_t channel, uint16_t value){
@@ -58,11 +59,11 @@ bool DAC60508::setDAC(uint8_t channel, uint16_t value){
 }
 
 // Read DAC value for channel in bits
-uint16_t DAC60508::readDAC(channel){
+uint16_t DAC60508::readDAC(uint8_t channel){
   if(channel >= 0 && channel < 8){
     return read(DAC60508_DAC0+channel);
   } else {
-    return NULL;
+    return 0;
   }
 }
 
@@ -113,9 +114,9 @@ void DAC60508::readUntilFalse(uint8_t reg, uint8_t bit) {
 uint16_t DAC60508::read(uint8_t reg){
   uint8_t modReg = reg | DAC60508_SPI_READ<<(DAC60508_SPI_RW_INDEX-16);
   uint8_t dataArray[3] = {modReg, 0x00, 0x00};
-  digitalWrite (CS_PIN, LOW);
-  wiringPiSPIDataRW (SPI_CHANNEL, dataArray, (sizeof(dataArray)/sizeof(dataArray[0])));
-  digitalWrite (CS_PIN,  HIGH);
+  digitalWrite (_CS_PIN, LOW);
+  wiringPiSPIDataRW (_SPI_CHANNEL, dataArray, (sizeof(dataArray)/sizeof(dataArray[0])));
+  digitalWrite (_CS_PIN,  HIGH);
   return dataArray[1]<<8 & dataArray[2];
 }
 
@@ -124,7 +125,7 @@ void DAC60508::write(uint8_t reg, uint16_t val){
   uint8_t highByte = (uint8_t)(val>>8);
   uint8_t lowByte = (uint8_t)val;
   uint8_t dataArray[3] = {modReg, highByte, lowByte};
-  digitalWrite (CS_PIN, LOW);
-  wiringPiSPIDataRW (SPI_CHANNEL, dataArray, (sizeof(dataArray)/sizeof(dataArray[0])));
-  digitalWrite (CS_PIN,  HIGH);
+  digitalWrite (_CS_PIN, LOW);
+  wiringPiSPIDataRW (_SPI_CHANNEL, dataArray, (sizeof(dataArray)/sizeof(dataArray[0])));
+  digitalWrite (_CS_PIN,  HIGH);
 }
