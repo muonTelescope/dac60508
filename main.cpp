@@ -25,6 +25,7 @@ int main (int argc, char** argv){
   dac->begin(CS_PIN, SPI_CHANNEL);
   dac->setDAC(0, data);
   dac->setDAC(1, data);
+  // printf("%d", dac->readmVDAC(0));
 
   return 0 ;
 }

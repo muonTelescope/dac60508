@@ -39,7 +39,7 @@ float DAC60508::readmVDAC(uint8_t channel){
   if(buffGain[channel]){
     val *= 2;
   }
-  return val;
+  return val*1000;
 }
 
 // bool setGain(uint8_t channel, uint8_t value){
